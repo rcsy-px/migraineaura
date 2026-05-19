@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Gyors aura{% endblock %}
+{% block content %}
+<div class="quick-wrap">
+  <div class="page-head compact">
+    <div>
+      <p class="eyebrow">gyors rögzítés</p>
+      <h1>Új aura</h1>
+      <p class="muted mb-0">{{ today.strftime('%Y.%m.%d.') }} {{ now.strftime('%H:%M') }}</p>
+    </div>
+  </div>
+  <form class="panel quick-panel" method="post">
+    <label class="form-label">Mi történik?</label>
+    <div class="choice-grid">
+      {% for key, label in event_types.items() %}
+        <label><input type="radio" name="event_type" value="{{ key }}" {% if key == 'full_aura' %}checked{% endif %}><span>{{ label }}</span></label>
+      {% endfor %}
+    </div>
+    <label class="form-label mt-4">Aura intenzitás</label>
+    <input class="form-range" type="range" min="0" max="4" value="3" name="aura_intensity" data-range-output="quickAuraOut">
+    <div class="range-caption">Szint: <strong id="quickAuraOut">3</strong>/4</div>
+    <label class="form-label mt-4">Vizuális tünetek</label>
+    <div class="chip-grid">
+      {% for key, label in visual_symptoms.items() %}
+        <label class="chip"><input type="checkbox" name="visual_symptoms" value="{{ key }}"><span>{{ label }}</span></label>
+      {% endfor %}
+    </div>
+    <div class="row g-3 mt-1">
+      <div class="col-6">
+        <label class="form-label">Fejfájás</label>
+        <input class="form-control form-control-lg" type="number" name="headache_intensity" min="0" max="10" value="0">
+      </div>
+      <div class="col-6 d-flex align-items-end">
+        <label class="quiet-check"><input type="checkbox" name="identical_to_usual_pattern" checked> megszokott</label>
+      </div>
+    </div>
+    <div class="toggle-grid mt-3">
+      <label><input type="checkbox" name="unusual_event"> szokatlan lefolyás</label>
+      <label><input type="checkbox" name="speech_problems"> beszédzavar</label>
+      <label><input type="checkbox" name="weakness"> féloldali gyengeség</label>
+    </div>
+    <label class="form-label mt-3">Rövid jegyzet</label>
+    <textarea class="form-control" rows="2" name="notes" placeholder="Pár szó elég."></textarea>
+    <button class="btn btn-primary btn-lg w-100 mt-4" type="submit">Rögzítés</button>
+    <a class="btn btn-ghost w-100 mt-2" href="{{ url_for('events.new_event') }}">Részletes naplózás</a>
+  </form>
+</div>
+{% endblock %}

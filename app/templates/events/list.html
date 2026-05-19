@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Események{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">napló</p>
+    <h1>Események</h1>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('events.new_event') }}">Részletes új</a>
+</div>
+<div class="event-list">
+  {% for event in events %}
+    <a class="event-card {% if event.has_red_flag %}soft-flag{% endif %}" href="{{ url_for('events.detail', event_id=event.id) }}">
+      <div>
+        <strong>{{ event.event_date.strftime('%Y.%m.%d.') }} {{ event.event_time.strftime('%H:%M') }}</strong>
+        <span>{{ event.event_type }} · aura {{ event.aura_intensity }}/4 · fejfájás {{ event.headache_intensity }}/10</span>
+      </div>
+      <small>{{ event.duration_minutes or '?' }} perc</small>
+    </a>
+  {% else %}
+    <div class="panel"><p class="muted mb-0">Még nincs bejegyzés.</p></div>
+  {% endfor %}
+</div>
+{% endblock %}

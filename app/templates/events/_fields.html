@@ -1,0 +1,135 @@
+<div class="form-section">
+  <h2>Alapadatok</h2>
+  <div class="row g-3">
+    <div class="col-6">
+      <label class="form-label">Dátum</label>
+      <input class="form-control" type="date" name="event_date" value="{{ event.event_date.isoformat() }}" required>
+    </div>
+    <div class="col-6">
+      <label class="form-label">Idő</label>
+      <input class="form-control" type="time" name="event_time" value="{{ event.event_time.strftime('%H:%M') }}" required>
+    </div>
+    <div class="col-6">
+      <label class="form-label">Típus</label>
+      <select class="form-select" name="event_type">
+        {% for key, label in event_types.items() %}
+          <option value="{{ key }}" {% if event.event_type == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-6">
+      <label class="form-label">Időtartam percben</label>
+      <input class="form-control" type="number" min="0" name="duration_minutes" value="{{ event.duration_minutes or '' }}">
+    </div>
+  </div>
+</div>
+
+<div class="form-section">
+  <h2>Aura és tünetek</h2>
+  <label class="form-label">Aura intenzitás</label>
+  <input class="form-range" type="range" min="0" max="4" name="aura_intensity" value="{{ event.aura_intensity or 0 }}" data-range-output="auraOut">
+  <div class="range-caption">Szint: <strong id="auraOut">{{ event.aura_intensity or 0 }}</strong>/4</div>
+  <div class="chip-grid mt-3">
+    {% for key, label in visual_symptoms.items() %}
+      <label class="chip"><input type="checkbox" name="visual_symptoms" value="{{ key }}" {% if key in event.visual_symptoms %}checked{% endif %}><span>{{ label }}</span></label>
+    {% endfor %}
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col-6">
+      <label class="form-label">Fejfájás</label>
+      <input class="form-control" type="number" min="0" max="10" name="headache_intensity" value="{{ event.headache_intensity or 0 }}">
+    </div>
+    <div class="col-6">
+      <label class="form-label">Kezdete perc múlva</label>
+      <input class="form-control" type="number" min="0" name="headache_started_after_minutes" value="{{ event.headache_started_after_minutes or '' }}">
+    </div>
+  </div>
+  <div class="toggle-grid mt-3">
+    <label><input type="checkbox" name="numbness" {% if event.numbness %}checked{% endif %}> zsibbadás</label>
+    <label><input type="checkbox" name="speech_problems" {% if event.speech_problems %}checked{% endif %}> beszédzavar</label>
+    <label><input type="checkbox" name="weakness" {% if event.weakness %}checked{% endif %}> gyengeség</label>
+    <label><input type="checkbox" name="confusion" {% if event.confusion %}checked{% endif %}> zavartság</label>
+  </div>
+</div>
+
+<div class="form-section">
+  <h2>24 órás kontextus</h2>
+  {% set ctx = event.trigger_context %}
+  <div class="row g-3">
+    <div class="col-6">
+      <label class="form-label">Alvás óra</label>
+      <input class="form-control" type="number" step="0.5" min="0" name="sleep_hours" value="{{ ctx.sleep_hours or '' }}">
+    </div>
+    <div class="col-6">
+      <label class="form-label">Alvás minőség</label>
+      <input class="form-control" type="number" min="1" max="5" name="sleep_quality" value="{{ ctx.sleep_quality or '' }}">
+    </div>
+    <div class="col-6">
+      <label class="form-label">Folyadék</label>
+      <select class="form-select" name="hydration_level">
+        {% for key, label in hydration_levels.items() %}
+          <option value="{{ key }}" {% if ctx.hydration_level == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-6">
+      <label class="form-label">Koffein db</label>
+      <input class="form-control" type="number" min="0" name="caffeine_count" value="{{ ctx.caffeine_count or 0 }}">
+    </div>
+    <div class="col-12">
+      <label class="form-label">Koffein típus</label>
+      <input class="form-control" name="caffeine_type" placeholder="3in1, espresso, energy drink" value="{{ ctx.caffeine_type or '' }}">
+    </div>
+  </div>
+  <div class="chip-grid mt-3">
+    {% for key, label in meal_flags.items() %}
+      <label class="chip"><input type="checkbox" name="meal_flags" value="{{ key }}" {% if key in ctx.meal_flags %}checked{% endif %}><span>{{ label }}</span></label>
+    {% endfor %}
+  </div>
+  <div class="row g-3 mt-1">
+    <div class="col-6">
+      <label class="form-label">Stressz</label>
+      <input class="form-control" type="number" min="1" max="5" name="stress_level" value="{{ ctx.stress_level or '' }}">
+    </div>
+    <div class="col-6">
+      <label class="form-label">Képernyő</label>
+      <select class="form-select" name="screen_time_level">
+        {% for key, label in screen_time_levels.items() %}
+          <option value="{{ key }}" {% if ctx.screen_time_level == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-12">
+      <label class="form-label">Betegség</label>
+      <select class="form-select" name="illness_type">
+        {% for key, label in illness_types.items() %}
+          <option value="{{ key }}" {% if ctx.illness_type == key %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="toggle-grid mt-3">
+    <label><input type="checkbox" name="interrupted_sleep" {% if ctx.interrupted_sleep %}checked{% endif %}> megszakított alvás</label>
+    <label><input type="checkbox" name="daytime_nap" {% if ctx.daytime_nap %}checked{% endif %}> nappali alvás</label>
+  </div>
+</div>
+
+<div class="form-section">
+  <h2>Mintázat és regeneráció</h2>
+  {% set rec = event.recovery %}
+  <div class="toggle-grid">
+    <label><input type="checkbox" name="identical_to_usual_pattern" {% if event.identical_to_usual_pattern %}checked{% endif %}> megszokott mintázat</label>
+    <label><input type="checkbox" name="unusual_event" {% if event.unusual_event %}checked{% endif %}> szokatlan lefolyás</label>
+    <label><input type="checkbox" name="fatigue_after" {% if rec.fatigue_after %}checked{% endif %}> utófáradtság</label>
+    <label><input type="checkbox" name="brain_fog" {% if rec.brain_fog %}checked{% endif %}> brain fog</label>
+    <label><input type="checkbox" name="irritability" {% if rec.irritability %}checked{% endif %}> ingerlékenység</label>
+    <label><input type="checkbox" name="sleep_after_event" {% if rec.sleep_after_event %}checked{% endif %}> alvás utána</label>
+    <label><input type="checkbox" name="returned_to_normal" {% if rec.returned_to_normal %}checked{% endif %}> visszatért normálra</label>
+  </div>
+  <label class="form-label mt-3">Regeneráció órában</label>
+  <input class="form-control" type="number" min="0" name="recovery_hours" value="{{ rec.recovery_hours or '' }}">
+  <label class="form-label mt-3">Jegyzet</label>
+  <textarea class="form-control" rows="3" name="notes">{{ event.notes or '' }}</textarea>
+  <label class="form-label mt-3">Lehetséges trigger jegyzet</label>
+  <textarea class="form-control" rows="2" name="possible_trigger_notes">{{ event.possible_trigger_notes or '' }}</textarea>
+</div>

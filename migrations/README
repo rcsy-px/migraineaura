@@ -1,0 +1,7 @@
+Flask-Migrate/Alembic migrations live here.
+
+Common commands:
+
+flask db init
+flask db migrate -m "initial migraine journal schema"
+flask db upgrade
