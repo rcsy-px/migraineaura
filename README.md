@@ -43,15 +43,15 @@ Alap demo fiók seed után:
 demo / demo12345
 ```
 
-Az app alapértelmezetten itt indul: `http://127.0.0.1:5000`.
+Az app alapértelmezetten itt indul: `http://127.0.0.1:5002`.
 
 Alhálózaton elérhető futtatás:
 
 ```powershell
-flask run --host 0.0.0.0 --port 5000
+flask run
 ```
 
-Ezután másik eszközről a gép LAN IP címével éred el, például: `http://192.168.1.50:5000`.
+A `.flaskenv` miatt ez automatikusan `0.0.0.0:5002` címen indul. Ezután másik eszközről a gép LAN IP címével éred el, például: `http://192.168.1.50:5002`.
 
 ## Környezeti változók
 
