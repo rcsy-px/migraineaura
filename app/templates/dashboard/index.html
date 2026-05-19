@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">áttekintés</p>
+    <h1>Migrénaura napló</h1>
+  </div>
+  <a class="btn btn-primary" href="{{ url_for('events.quick_new') }}">Új aura</a>
+</div>
+
+<section class="metric-grid">
+  <div class="metric"><span>Összes esemény</span><strong>{{ total }}</strong></div>
+  <div class="metric"><span>Figyelmet kérő mintázat</span><strong>{{ red_flags }}</strong></div>
+  <div class="metric"><span>Utolsó bejegyzés</span><strong>{{ events[0].event_date.strftime('%m.%d.') if events else '-' }}</strong></div>
+</section>
+
+<section class="content-grid">
+  <div class="panel">
+    <div class="section-title">
+      <h2>Timeline</h2>
+      <a href="{{ url_for('events.list_events') }}">Mind</a>
+    </div>
+    <div class="timeline">
+      {% for event in events[:8] %}
+        <a class="timeline-item {% if event.has_red_flag %}soft-flag{% endif %}" href="{{ url_for('events.detail', event_id=event.id) }}">
+          <span class="dot"></span>
+          <span>
+            <strong>{{ event.event_date.strftime('%Y.%m.%d.') }} {{ event.event_time.strftime('%H:%M') }}</strong>
+            <small>{{ event.event_type }} · aura {{ event.aura_intensity }}/4</small>
+          </span>
+        </a>
+      {% else %}
+        <p class="muted mb-0">Még nincs esemény. Az Új aura gombbal indíthatsz gyors bejegyzést.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="section-title"><h2>Trigger gyakoriság</h2></div>
+    {% for name, count in trigger_rows %}
+      <div class="bar-row"><span>{{ name }}</span><div><i style="width: {{ [count * 18, 100]|min }}%"></i></div><b>{{ count }}</b></div>
+    {% else %}
+      <p class="muted mb-0">A kontextusadatokból itt jelennek meg a gyakori tényezők.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="content-grid mt-3">
+  <div class="panel">
+    <div class="section-title"><h2>Aura intenzitás</h2></div>
+    <canvas id="intensityChart" height="170" data-points='{{ intensity_points|tojson }}'></canvas>
+  </div>
+  <div class="panel">
+    <div class="section-title"><h2>Napszak és hónap</h2></div>
+    <div class="split-list">
+      <div>
+        {% for label, count in hour_rows %}
+          <p><span>{{ label }}</span><strong>{{ count }}</strong></p>
+        {% endfor %}
+      </div>
+      <div>
+        {% for label, count in monthly_rows %}
+          <p><span>{{ label }}</span><strong>{{ count }}</strong></p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="panel mt-3">
+  <div class="section-title"><h2>Naptár nézet</h2></div>
+  <div class="calendar-strip">
+    {% for event in events[:18] %}
+      <a class="{% if event.has_red_flag %}soft-flag{% endif %}" href="{{ url_for('events.detail', event_id=event.id) }}">
+        <span>{{ event.event_date.strftime('%b') }}</span>
+        <strong>{{ event.event_date.strftime('%d') }}</strong>
+      </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

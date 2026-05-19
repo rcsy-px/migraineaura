@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Esemény{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">részletek</p>
+    <h1>{{ event.event_date.strftime('%Y.%m.%d.') }} {{ event.event_time.strftime('%H:%M') }}</h1>
+  </div>
+  <a class="btn btn-outline-primary" href="{{ url_for('events.edit', event_id=event.id) }}">Szerkesztés</a>
+</div>
+
+{% if event.has_red_flag %}
+  <div class="notice soft-flag">Ez az esemény eltér a megszokott mintától vagy új tünetet tartalmaz. Érdemes külön megjegyzést hagyni róla.</div>
+{% endif %}
+
+<section class="detail-grid">
+  <div class="panel">
+    <h2>Esemény</h2>
+    <dl class="detail-list">
+      <dt>Típus</dt><dd>{{ event.event_type }}</dd>
+      <dt>Aura</dt><dd>{{ event.aura_intensity }}/4</dd>
+      <dt>Vizuális tünetek</dt><dd>{{ event.visual_symptoms|join(', ') or '-' }}</dd>
+      <dt>Fejfájás</dt><dd>{{ event.headache_intensity }}/10</dd>
+      <dt>Neurológiai</dt><dd>{% if event.numbness or event.speech_problems or event.weakness or event.confusion %}rögzítve{% else %}-{% endif %}</dd>
+    </dl>
+  </div>
+  <div class="panel">
+    <h2>24 órás kontextus</h2>
+    {% set ctx = event.trigger_context %}
+    <dl class="detail-list">
+      <dt>Alvás</dt><dd>{{ ctx.sleep_hours or '-' }} óra · minőség {{ ctx.sleep_quality or '-' }}/5</dd>
+      <dt>Folyadék</dt><dd>{{ ctx.hydration_level if ctx else '-' }}</dd>
+      <dt>Koffein</dt><dd>{{ ctx.caffeine_count if ctx else 0 }} · {{ ctx.caffeine_type or '-' if ctx else '-' }}</dd>
+      <dt>Stressz</dt><dd>{{ ctx.stress_level or '-' if ctx else '-' }}/5</dd>
+      <dt>Étkezés</dt><dd>{{ ctx.meal_flags|join(', ') if ctx and ctx.meal_flags else '-' }}</dd>
+    </dl>
+  </div>
+  <div class="panel">
+    <h2>Regeneráció</h2>
+    {% set rec = event.recovery %}
+    <dl class="detail-list">
+      <dt>Fáradtság</dt><dd>{{ 'igen' if rec and rec.fatigue_after else 'nem' }}</dd>
+      <dt>Brain fog</dt><dd>{{ 'igen' if rec and rec.brain_fog else 'nem' }}</dd>
+      <dt>Visszaállás</dt><dd>{{ rec.recovery_hours or '-' if rec else '-' }} óra</dd>
+      <dt>Normál állapot</dt><dd>{{ 'igen' if rec and rec.returned_to_normal else 'nem' }}</dd>
+    </dl>
+  </div>
+  <div class="panel">
+    <h2>Jegyzetek</h2>
+    <p>{{ event.notes or 'Nincs jegyzet.' }}</p>
+    <p class="muted">{{ event.possible_trigger_notes or '' }}</p>
+  </div>
+</section>
+{% endblock %}

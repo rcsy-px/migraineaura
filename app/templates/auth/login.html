@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Belépés{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div>
+    <p class="eyebrow">local-first személyes napló</p>
+    <h1>Migrén és aura, gyorsan rögzítve.</h1>
+    <p class="muted">Privát, egyszerű felület a hosszabb távú mintázatokhoz. Nem diagnosztikai eszköz.</p>
+  </div>
+  <form class="panel auth-panel" method="post">
+    <label class="form-label">Felhasználónév</label>
+    <input class="form-control form-control-lg" name="username" autocomplete="username" required autofocus>
+    <label class="form-label mt-3">Jelszó</label>
+    <input class="form-control form-control-lg" type="password" name="password" autocomplete="current-password" required>
+    <button class="btn btn-primary btn-lg w-100 mt-4" type="submit">Belépés</button>
+    <a class="small-link" href="{{ url_for('auth.register') }}">Új helyi fiók létrehozása</a>
+  </form>
+</section>
+{% endblock %}
